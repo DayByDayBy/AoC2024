@@ -1,3 +1,4 @@
+
 const fs = require("fs");
 const path = require("path");
 
@@ -5,27 +6,20 @@ async function readAndSplit() {
   const filePath = path.join(__dirname, "small_data.txt");
 
   try {
-    const data = await fs.promises.readFile(filePath, "utf8");
+    const fileContent = fs.readFileSync(filePath, "utf8");
     const regex = /mul(\d+),(\d+)/g;
-
     let mulStrArray = [];
-    let str = data
+    let match;
 
-    while (true) {
-      const match = regex.exec(str);
-
-      if (!match) break;
-
+    while ((match = regex.exec(fileContent)) !== null) {
       const a = parseInt(match[1]);
       const b = parseInt(match[2]);
-
       mulStrArray.push(`mul(${a},${b})`);
-      str.replace(match[0], "");
     }
-    console.log(mulStrArray)
+    return mulStrArray;
   } catch (e) {
-    console.error("error reading file: ", e);
+    console.error("error reading file", e);
   }
+  return mulStrArray;
 }
-
-readAndSplit();
+readAndSplit().then((result) => console.log(result));
