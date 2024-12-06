@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const filePath = path.join(__dirname, "data.txt");
+const filePath = path.join(__dirname, "small_data.txt");
 
 fs.readFile(filePath, "utf-8", (err, data) => {
   if (err) {
@@ -8,19 +8,12 @@ fs.readFile(filePath, "utf-8", (err, data) => {
     return;
   }
 
-});
 
-
-
+// string =  `${data}`;
 string = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
 
-split = string.split(')');
+const regex = /mul(\d+),(\d+)/g;
 
-console.log(split);
-
-
-
-const regex = /mul\((\d+),(\d+)\)|mul\(.*?\)/g;
 
 function splitMulString(string){
 
@@ -48,10 +41,16 @@ function splitMulString(string){
         }
         // console.log(match);
 
-
+        mulStrArray.push(`mul(${a},${b})`);
+        string.substring(regex.lastIndex+1)
     }
+    return mulStrArray;
+
 };
 
 
 const s = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
 console.log(splitMulString(s));
+
+
+});
