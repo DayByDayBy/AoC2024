@@ -1,56 +1,31 @@
 const fs = require("fs");
 const path = require("path");
-const filePath = path.join(__dirname, "small_data.txt");
 
-fs.readFile(filePath, "utf-8", (err, data) => {
-  if (err) {
-    console.error("error when reading file: ", err);
-    return;
-  }
+async function readAndSplit() {
+  const filePath = path.join(__dirname, "small_data.txt");
 
-
-// string =  `${data}`;
-string = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
-
-const regex = /mul(\d+),(\d+)/g;
-
-
-function splitMulString(string){
+  try {
+    const data = await fs.promises.readFile(filePath, "utf8");
+    const regex = /mul(\d+),(\d+)/g;
 
     let mulStrArray = [];
-    let match;
+    let str = data
 
     while (true) {
-        const match = regex.exec(s);
-        if (!match) break;
+      const match = regex.exec(str);
 
-        const aMatch = match[1];
-        const bMatch = match[2];
-        const bracketMatch = match[3];
+      if (!match) break;
 
-        if (bracketMatch && !/[a-zA-Z]/.test(bracketMatch)){
-            string = string.substring(0, regex.lastIndex) + string.substring(regex.index + match[0].length)
-            continue;
-        }
+      const a = parseInt(match[1]);
+      const b = parseInt(match[2]);
 
-        const a = parseInt(aMatch);
-        const b = parseInt(bMatch);
-
-        if (isNaN(a) || isNaN(b)){
-            continue;
-        }
-        // console.log(match);
-
-        mulStrArray.push(`mul(${a},${b})`);
-        string.substring(regex.lastIndex+1)
+      mulStrArray.push(`mul(${a},${b})`);
+      str.replace(match[0], "");
     }
-    return mulStrArray;
+    console.log(mulStrArray)
+  } catch (e) {
+    console.error("error reading file: ", e);
+  }
+}
 
-};
-
-
-const s = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
-console.log(splitMulString(s));
-
-
-});
+readAndSplit();
