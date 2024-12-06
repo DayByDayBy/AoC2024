@@ -22,14 +22,36 @@ console.log(split);
 
 const regex = /mul\((\d+),(\d+)\)|mul\(.*?\)/g;
 
-
 function splitMulString(string){
+
     let mulStrArray = [];
     let match;
 
-    while ((match = regex.exec(string)) !== null {
-        if (match[1] && match[2]){
-            mulStrArray.push(`mul${match[1]}, ${match[2]}`)
+    while (true) {
+        const match = regex.exec(s);
+        if (!match) break;
+
+        const aMatch = match[1];
+        const bMatch = match[2];
+        const bracketMatch = match[3];
+
+        if (bracketMatch && !/[a-zA-Z]/.test(bracketMatch)){
+            string = string.substring(0, regex.lastIndex) + string.substring(regex.index + match[0].length)
+            continue;
         }
+
+        const a = parseInt(aMatch);
+        const b = parseInt(bMatch);
+
+        if (isNaN(a) || isNaN(b)){
+            continue;
+        }
+        // console.log(match);
+
+
     }
-}
+};
+
+
+const s = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+console.log(splitMulString(s));
