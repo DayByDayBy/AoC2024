@@ -42,7 +42,6 @@ fs.readFile(filePath, "utf-8", (err, data) => {
 
   const safe = isAscending.map((val, idx) => 
     val ||  isDescending[idx]);
-  
   console.log(safe.filter(Boolean).length);
 
 });
