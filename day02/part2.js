@@ -10,52 +10,38 @@ fs.readFile(filePath, "utf-8", (err, data) => {
 
   const lines = data.trim().split("\n");
   const reports = lines.map((line) => line.split(" ").map(Number));
-
   const limit = 3;
 
 
-  const isAscending = reports.map((row) => {
-    let errorCount = 0;
-    for (let i = 0; i < row.length; i++) {
-      if (row[i + 1] < row[i]) {
-        errorCount++;
-      }
-      if (errorCount > 1 || (errorCount === 1 && row[i + 1] - row[i] > 3)) {
-        return false;
-      }
-    }
-    return true;
+  const isAscending = (row) =>
+    row.every((value, i) => i === 0 || (value > row[i - 1] && value - row[i - 1] <= limit));
+
+  const isDescending = (row) =>
+    row.every((value, i) => i === 0 || (value < row[i - 1] && row[i - 1] - value <= limit));
+
+
+  const isValidSequence = (row, limit, isAscending) => 
+    row.some((_, removeIndex) => {
+      const modifiedRow = row.filter((_, index) => index !== removeIndex);
+      return modifiedRow.every((value, i) => {
+        if (i === 0) return true;
+        if (isAscending) {
+          return (
+            value > modifiedRow[i - 1] && value - modifiedRow[i - 1] <= limit
+          );
+        } else {
+          return (
+            value < modifiedRow[i - 1] && value - modifiedRow[i - 1] <= limit
+          );
+        }
+      });
+    });
+
+  const results = reports.map((row) => {
+      if (isAscending(row) || isDescending(row)) return true;
+      return isValidSequence(row, limit, true) || isValidSequence(row, limit, false);
   });
 
-  const isDescending = reports.map((row) => {
-    let errorCount = 0;
-    for (let i = 0; i < row.length; i++) {
-      if (row[i + 1] > row[i]) {
-        errorCount++;
-      }
-      if (errorCount > 1 || (errorCount === 1 && row[i] - row[i + 1] > 3)) {
-        return false;
-      }
-    }
-    return true;
-  });
-
-
-
-//   tis bit is me reducing memory complexity, probably not that necessary tbh
-
-const falseRows = reports.map((row, index) => 
-    !isAscending[index] && isAscending[index] ? index : -1).filter(index => index !=-1);
-
-const complexCheck = falseRows.map(index =>
-    isValidSequence(reports[index], limit, true) ||
-    isValidSequence(reports[index], limit, false)
-  );
-
-  const asCount = isAscending.filter(Boolean).length;
-  const desCount = isDescending.filter(Boolean).length;
-
-  const safe = isAscending.map((val, idx) => val || isDescending[idx] || (complexCheck[falseRows.indexOf(idx)] || false));
-
-  console.log(safe.filter(Boolean).length);
+  const safe = results.filter(Boolean).length;
+  console.log(safe);
 });
