@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-
 const filePath = path.join(__dirname, "data.txt");
 
 fs.readFile(filePath, "utf-8", (err, data) => {
@@ -10,11 +9,7 @@ fs.readFile(filePath, "utf-8", (err, data) => {
   }
 
   const lines = data.trim().split("\n");
-
   const reports = lines.map((line) => line.split(" ").map(Number));
-
-  //   console.log("lines:", lines);
-  //   console.log("reports:", reports);
 
   const isAscending = reports.map((row) =>
     row
@@ -32,13 +27,8 @@ fs.readFile(filePath, "utf-8", (err, data) => {
       )
   );
 
-//   console.log("rows ascending:", isAscending);
-//   console.log("rows descending:", isDescending);
-
   const asCount = isAscending.filter(Boolean).length;
   const desCount = isDescending.filter(Boolean).length;
-
-  console.log("A & D:", asCount, '&', desCount);
 
   const safe = isAscending.map((val, idx) => 
     val ||  isDescending[idx]);
