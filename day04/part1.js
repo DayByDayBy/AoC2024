@@ -10,3 +10,24 @@
 //   maybe check for easy ones first? do a l-r pass, then a top-bottom pass? if so, probably double check xmas and samx?
 // 
 
+
+const { log } = require("console");
+const fs = require("fs");
+const path = require("path");
+const filePath = path.join(__dirname, "small_data.txt");
+const fileContent = fs.readFileSync(filePath, "utf8");
+
+
+fs.readFile(filePath, "utf-8", (err, data) => {
+    if (err) {
+      console.error("error when reading file: ", err);
+      return;
+}
+
+
+const lines = data.trim().split("\n");
+
+
+console.log(lines);
+});
+
