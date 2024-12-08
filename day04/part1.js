@@ -29,6 +29,47 @@ const lines = data.trim().split("\n");
 const twoDArray = lines.map(line => line.split(""));
 
 
+const findMatches = (grid, target, nextTarget) => {
+    const rows = grid.length;
+    const cols = grid[0].length;
+    const results = [];
+
+    const directions = [
+        [-1, -1], [-1, 0], [-1, -1],
+        [0,-1], [0,1],
+        [-1,1], [1, 0], [1, 1] 
+    ]
+
+    const isValid = (x, y) => x >= 0 & x < rows && y >= 0 && y < cols;
+
+
+    for (let i = 0; i < rows; i++){
+        for (let j =0; j < cols; j++) {
+            if (grid[i][j] === target){
+                for (const [dx, dy] of directions){
+                    const ni = i +dx;
+                    const nj = j + dy;
+
+                    if (isValid(ni, nj) && grid[ni][nj] === nextTarget){
+                        results.push({
+                            target: {row: i, col: j},
+                            neighbour: {row: ni, col: nj },
+                        });
+                    }
+                }
+            }
+        }
+    }
+return results;
+
+
+};
+
+
+const matches = findMatches(twoDArray, 'X', 'M');
+log(matches);
+
+
 // log(lines);
 // log(twoDArray);
 
