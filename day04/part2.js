@@ -26,10 +26,12 @@ fs.readFile(filePath, "utf8", (err, data) => {
 
     const isValid = (x, y) => x >= 0 && x < rows && y >= 0 && y < cols;
 
-    const search = (x, y) => {
-      const word = "MAS";
+    const search = (x, y, visited) => {
+      
+        const word = "MAS";
 
       for (const [dx1, dy1, dx2, dy2] of directions) {
+
         const nx1 = x + dx1,
           ny1 = y + dy1;
         const nx2 = x + dx2,
@@ -41,6 +43,8 @@ fs.readFile(filePath, "utf8", (err, data) => {
           isValid(nx2, ny2) &&
           grid[nx2][ny2] === "S"
         ) {
+          visited[nx1][ny1] = true;
+          visited[nx2][ny2] = true;
           return true;
         }
       }
@@ -48,17 +52,16 @@ fs.readFile(filePath, "utf8", (err, data) => {
     };
 
     let count = 0;
+    const visited = Array.from({ length: rows}, () => Array(cols).fill(false));
 
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
-        if (grid[i][j] === "A") {
-          for (const [dx, dy] of directions) {
-            if (search(i, j)) {
+        if (grid[i][j] === "A" && !visited[i][j]) {
+            if (search(i, j, visited)) {
               count++;
             }
           }
         }
-      }
     }
     return count;
   };
