@@ -62,7 +62,6 @@ const findMatches = (grid, target, nextTarget) => {
     }
 return results;
 
-
 };
 
 
