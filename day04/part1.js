@@ -26,8 +26,12 @@ fs.readFile(filePath, "utf-8", (err, data) => {
 
 
 const lines = data.trim().split("\n");
+const twoDArray = lines.map(line => line.split(""));
 
 
-console.log(lines);
+// log(lines);
+// log(twoDArray);
+
+
 });
 
