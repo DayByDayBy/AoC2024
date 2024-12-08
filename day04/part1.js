@@ -1,16 +1,3 @@
-// 140 by 140 grid again
-// probably do the ole 2d array?
-
-//   maybe matching x and then checking adjacent squares for M
-//        - none, move on, 
-//        - find one, continue in that direction and check for an A, 
-//        - none, move on, check for S
-
-//      a bit slow, tho 
-//   maybe check for easy ones first? do a l-r pass, then a top-bottom pass? if so, probably double check xmas and samx?
-// 
-
-
 const { log } = require("console");
 const fs = require("fs");
 const path = require("path");
@@ -25,14 +12,14 @@ fs.readFile(filePath, "utf-8", (err, data) => {
 }
 
 
+
 const lines = data.trim().split("\n");
 const twoDArray = lines.map(line => line.split(""));
 
 
-const findMatches = (grid, target, nextTarget) => {
+const findInGrid = (grid, target, nextTarget) => {
     const rows = grid.length;
     const cols = grid[0].length;
-    const results = [];
 
     const directions = [
         [-1, -1], [-1, 0], [-1, -1],
@@ -42,31 +29,39 @@ const findMatches = (grid, target, nextTarget) => {
 
     const isValid = (x, y) => x >= 0 & x < rows && y >= 0 && y < cols;
 
+    const search = (x, y, dx, dy) => {
+
+        const nx1 = x + dx, ny1 = y + dy;
+        const nx2 = nx1 + dx, ny2 = ny1 + dy;
+        const nx3 = nx2 + dx, ny3 = ny2 + dy;
+
+        return(
+            isValid(nx1, ny1) && grid[nx1][ny1] === 'M' &&
+            isValid(nx2, ny2) && grid[nx2][ny2] === 'A' &&
+            isValid(nx3, ny3) && grid[nx3][ny3] === 'S'
+        );
+    };
+
+    let count = 0;
+
 
     for (let i = 0; i < rows; i++){
         for (let j =0; j < cols; j++) {
-            if (grid[i][j] === target){
+            if (grid[i][j] === 'X'){
                 for (const [dx, dy] of directions){
-                    const ni = i +dx;
-                    const nj = j + dy;
-
-                    if (isValid(ni, nj) && grid[ni][nj] === nextTarget){
-                        results.push({
-                            target: {row: i, col: j},
-                            neighbour: {row: ni, col: nj },
-                        });
+                    if (search(i, j, dx, dy)){
+                        count++
+                        break
                     }
                 }
             }
-        }
-    }
-return results;
-
+                    }
+                }
+                return count;
 };
 
-
-const matches = findMatches(twoDArray, 'X', 'M');
-log(matches);
+const occurences = findInGrid(twoDArray);
+log(occurences);
 
 
 // log(lines);
