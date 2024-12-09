@@ -60,10 +60,9 @@ async function middleDigits(file) {
             return ['oh no!'];
         }
 
-        let middleDigitList = [];
-        var middle = updateList[Math.round((updateList.length - 1) / 2)];
-        middleDigitList.push(middle);
-        // return middleDigitList
+        const middleIdx = Math.floor(updateList.length/2);
+        const middleDigitList = [updateList[middleIdx]];
+
         log.middleDigitList
 
     } catch{}
