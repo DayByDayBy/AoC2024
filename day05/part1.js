@@ -50,6 +50,7 @@ async function checkUpdates(filename) {
   } catch (error) {
     error(`file error: ${error.message}`);
   }
-  
+
 };
 checkUpdates("small_data.txt");
+// checkUpdates("data.txt");
