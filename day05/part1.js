@@ -6,13 +6,11 @@ async function checkUpdates(filename) {
   try {
     const filePath = path.join(__dirname, filename);
     const data = await fs.promises.readFile(filePath, "utf8");
-
       //   the two parts:
       const parts = data.trim().split("\n\n");
       if (parts.length !== 2) {
         throw new Error("expecting two parts");
       }
-
       //   the ruleset:
       const rules = (ruleStr) => {
         return ruleStr
@@ -27,7 +25,6 @@ async function checkUpdates(filename) {
               return [first, second];
           });
       };
-
       const updates = (updateStr) => {
         return updateStr
           .trim()
@@ -39,18 +36,33 @@ async function checkUpdates(filename) {
                 return num;
               });
             });
-        };
-          
+        };  
         const rulesArray = rules(parts[0]);
         const updatesArray = updates(parts[1]);
 
-        log(rulesArray);
-        log(updatesArray);
+        // log(rulesArray);
+        // log(updatesArray);
+
+
+
 
   } catch (error) {
     error(`file error: ${error.message}`);
   }
 
 };
-checkUpdates("small_data.txt");
+
+async function middleDigits(file) {
+    let middleDigitList = [];
+    var updates = checkUpdates(file);
+    var middle = updates[Math.round((updates.length - 1) / 2)];
+    middleDigitList.push(middle);
+    // return middleDigitList
+    log.middleDigitList
+}
+
+
+
+middleDigits("small_data.txt")
+// checkUpdates("small_data.txt");
 // checkUpdates("data.txt");
