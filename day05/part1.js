@@ -39,28 +39,41 @@ async function checkUpdates(filename) {
         };  
         const rulesArray = rules(parts[0]);
         const updatesArray = updates(parts[1]);
-
+  
         // log(rulesArray);
         // log(updatesArray);
-
-
-
 
   } catch (error) {
     error(`file error: ${error.message}`);
   }
 
+
 };
 
 async function middleDigits(file) {
-    let middleDigitList = [];
-    var updates = checkUpdates(file);
-    var middle = updates[Math.round((updates.length - 1) / 2)];
-    middleDigitList.push(middle);
-    // return middleDigitList
-    log.middleDigitList
+    try{
+
+        const updateList = await checkUpdates(file);
+
+        if (updateList.length === 0) {
+            log(`no updates found`);
+            return ['oh no!'];
+        }
+
+        let middleDigitList = [];
+        var middle = updateList[Math.round((updateList.length - 1) / 2)];
+        middleDigitList.push(middle);
+        // return middleDigitList
+        log.middleDigitList
+
+    } catch{}
+  
 }
 
+
+(async () => {
+    await middleDigits("small_data.txt");
+  })();
 
 
 middleDigits("small_data.txt")
