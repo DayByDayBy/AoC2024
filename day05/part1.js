@@ -39,6 +39,8 @@ async function checkUpdates(filename) {
         };  
         const rulesArray = rules(parts[0]);
         const updatesArray = updates(parts[1]);
+
+        return updatesArray;
   
         // log(rulesArray);
         // log(updatesArray);
