@@ -63,13 +63,13 @@ async function middleDigits(file) {
         const middleIdx = Math.floor(updateList.length/2);
         const middleDigitList = [updateList[middleIdx]];
 
-        log.middleDigitList
-
-    } catch{}
-  
-}
-
-
+        log(middleDigitList);
+        return middleDigitList;
+    } catch (err) {
+        log(`error in middleDigits:  ${err}`);
+        return [];
+    }
+    }
 (async () => {
     await middleDigits("small_data.txt");
   })();
