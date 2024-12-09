@@ -8,11 +8,27 @@ fs.readFile(filePath, "utf8", (err, data) => {
     console.error("Error when reading file: ", err);
     return;
   }
+
+//   the two halves:
+
   const parts = data.trim().split("\n\n");
 
-  const guide = parts[0].trim().split("\n");
-  const pages = parts[1].trim().split("\n");
+//   the ruleset:
 
-//   log(guide);
-//   log(pages);
+  const rules = parts[0].trim().split("\n");
+  const rulesArray = rules.map((rule) => {
+    const [first, second] = rule
+    .split("|")
+    .map(Number);
+    return [first, second];
+  });
+
+//   the text to check:
+  const updates = parts[1].trim().split("\n");
+  const updatesArray = updates.map((update) => {
+    return update.split(',').map(Number);
+});
+
+  log(rulesArray);
+  log(updatesArray);
 });
