@@ -6,12 +6,13 @@ async function grabUpdates(filename) {
   try {
     const filePath = path.join(__dirname, filename);
     const data = await fs.promises.readFile(filePath, "utf8");
-    //   the two parts:
+    
+    //    two parts:
     const parts = data.trim().split("\n\n");
     if (parts.length !== 2) {
       throw new Error("expecting two parts");
     }
-    //   the ruleset:
+    //   ruleset:
     const rules = (ruleStr) => {
       return ruleStr
         .trim()
@@ -25,6 +26,7 @@ async function grabUpdates(filename) {
           return [first, second];
         });
     };
+    // updates:
     const updates = (updateStr) => {
       return updateStr
         .trim()
@@ -40,20 +42,21 @@ async function grabUpdates(filename) {
     const rulesArray = rules(parts[0]);
     const updatesArray = updates(parts[1]);
 
-    while (validateRules(updatesArray,rulesArray)) {
-        return rulesArray, updatesArray;
+
+    if (validateRules(updatesArray.flat(),rulesArray)) {
+     return { updatesArray };
     }
 
-    // log(rulesArray);
-    // log(updatesArray);
   } catch (err) {
     error(`file error: ${err.message}`);
     return [];
   }
 }
 
-async function validateRules(arr, rules){
-    const positions = new Map(arr.map((num, index) => [num, index]))
+// validation of updates that follow rules:
+
+function validateRules(arr, rules){
+    const positions = new Map(arr.map((num, idx) => [num, idx]))
     for (const [first, second] of rules) {
       const firstIndex = positions.get(first);
       const secondIndex = positions.get(second);
@@ -65,9 +68,6 @@ async function validateRules(arr, rules){
     }
     return true;
   };
-
-
-
 
 async function middleDigits(file) {
   try {
@@ -92,5 +92,3 @@ async function middleDigits(file) {
 (async () => {
   await middleDigits("small_data.txt");
 })();
-
-middleDigits("small_data.txt");
