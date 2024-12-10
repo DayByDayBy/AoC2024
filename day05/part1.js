@@ -19,9 +19,12 @@ const parseUpdate = (str) =>
   });
 
 const isValidUpdate = (update, rulesArray) => {
+  const indexMap = new Map(update.map((val, idx) => [val, idx]));
+
   for (const [first, second] of rulesArray) {
     const firstIdx = update.indexOf(first);
     const secondIdx = update.indexOf(second);
+
     if (firstIdx !== -1 && secondIdx !== -1 && firstIdx > secondIdx) {
       return false;
     }
@@ -29,22 +32,30 @@ const isValidUpdate = (update, rulesArray) => {
   return true;
 };
 
-
 // ooh, time for a bespoke-order sorting alogrithm
 
-const fixUpdate = (update, rulesArray) =>{
-    let fixedUpdate = [...update];
-    for (const [first, second] of rulesArray){
-        const firstIdx = fixedUpdate.indexOf(first);
-        const secondIdx = fixedUpdate.indexOf(second);
+const fixUpdate = (update, rulesArray) => {
+  let fixedUpdate = [...update];
 
-        if (firstIdx !== -1 && secondIdx !== -1 && firstIdx > secondIdx) {
-            fixedUpdate[firstIdx] = second;
-            fixedUpdate[secondIdx] = first;
-        }
-    } return fixedUpdate
+  //   const indexMap = new Map(update.map((val, idx) => [val, idx]));
+
+  const conflicts = rulesArray.filter(([first, second]) => {
+    const firstIdx = fixedUpdate.indexOf(first);
+    const secondIdx = fixedUpdate.indexOf(second);
+    return firstIdx !== -1 && secondIdx !== -1 && firstIdx > secondIdx;
+  });
+
+  for (const [first, second] of conflicts) {
+    const firstIdx = fixedUpdate.indexOf(first);
+    const secondIdx = fixedUpdate.indexOf(second);
+
+    [fixedUpdate[firstIdx], fixedUpdate[secondIdx]] = [
+      fixedUpdate[secondIdx],
+      fixedUpdate[firstIdx],
+    ];
+  }
+  return fixedUpdate;
 };
-
 
 async function checkUpdates(filename) {
   try {
@@ -74,13 +85,49 @@ async function checkUpdates(filename) {
   }
 }
 
+async function fixUpdates(fileName) {
+  try {
+    const { rulesArray, updatesArray } = await checkUpdates(fileName);
 
+    log(`Total Rules: ${rulesArray.length}`);
+    log(`Total Updates: ${updatesArray.length}`);
 
+    log("Rules:");
+    rulesArray.forEach((rule) => log(rule));
 
+    log("All Updates:");
+    updatesArray.forEach((update) => log(update));
 
-    // const brokenUpdates = updatesArray.filter((update) => !isValidUpdate(update, rulesArray));
+    const brokenUpdates = updatesArray.filter((update) => {
+      const isInvalid = !isValidUpdate(update, rulesArray);
+      if (isInvalid) {
+      } return isInvalid;
+    });
+      return brokenUpdates;
+    } catch (err){
+        error(`eror in fixUpdates: ${err.message}`);
+        return [];
+    }
+}
 
+    log(`Broken Updates (${brokenUpdates.length}):`);
+    brokenUpdates.forEach((update, index) => {
+      log(`Update ${index + 1}: ${update}`);
+    });
 
+    const fixedUpdates = brokenUpdates.map((update) =>
+      fixUpdate(update, rulesArray)
+    );
+
+    log(`broken updates: ${brokenUpdates.length}`);
+    log(`fixed updates: ${fixedUpdates.length}`);
+
+    return fixedUpdates;
+  } catch (err) {
+    error(`error in fixUpdates: ${err.message}`);
+    return [];
+  }
+}
 
 function findMiddleDigit(update) {
   const midIdx = Math.floor((update.length - 1) / 2);
@@ -112,6 +159,10 @@ async function middleDigits(file) {
 //     await middleDigits('small_data.txt');
 // })();
 
+// (async () => {
+//   await middleDigits("data.txt");
+// })();
+
 (async () => {
-  await middleDigits("data.txt");
+  await fixUpdates("small_data.txt");
 })();
