@@ -29,6 +29,23 @@ const isValidUpdate = (update, rulesArray) => {
   return true;
 };
 
+
+// ooh, time for a bespoke-order sorting alogrithm
+
+const fixUpdate = (update, rulesArray) =>{
+    let fixedUpdate = [...update];
+    for (const [first, second] of rulesArray){
+        const firstIdx = fixedUpdate.indexOf(first);
+        const secondIdx = fixedUpdate.indexOf(second);
+
+        if (firstIdx !== -1 && secondIdx !== -1 && firstIdx > secondIdx) {
+            fixedUpdate[firstIdx] = second;
+            fixedUpdate[secondIdx] = first;
+        }
+    } return fixedUpdate
+};
+
+
 async function checkUpdates(filename) {
   try {
     const filePath = path.join(__dirname, filename);
@@ -56,6 +73,15 @@ async function checkUpdates(filename) {
     return { rulesArray: [], updatesArray: [] };
   }
 }
+
+
+
+
+
+    // const brokenUpdates = updatesArray.filter((update) => !isValidUpdate(update, rulesArray));
+
+
+
 function findMiddleDigit(update) {
   const midIdx = Math.floor((update.length - 1) / 2);
   return update[midIdx];
