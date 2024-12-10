@@ -20,7 +20,7 @@ const parseUpdate = (str) =>
 
 const isValidUpdate = (update, rulesArray) => {
   for (const [first, second] of rulesArray) {
-    const firstIdx = update.incdexOf(first);
+    const firstIdx = update.indexOf(first);
     const secondIdx = update.indexOf(second);
     if (firstIdx !== -1 && secondIdx !== -1 && firstIdx > secondIdx) {
       return false;
