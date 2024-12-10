@@ -69,22 +69,28 @@ function validateRules(arr, rules){
     return true;
   };
 
+function findMiddleDigit(update){
+    const midIdx = Math.floor((update.length - 1)/2);
+    return update[midIdx]
+}
+
 async function middleDigits(file) {
   try {
-    const updateList = await grabUpdates(file);
+    const { updateList } = await grabUpdates(file);
 
     if (updateList.length === 0) {
       log(`no updates found`);
-      return [];
+      return {middleDigits: [], sum: 0};
     }
 
-    const middleIdx = Math.floor((updateList.length - 1) / 2);
-    const middleDigitList =
-      updateList.length === 1 ? updateList : [updateList[middleIdx]];
+    const middleDigits = updatesArray.map(findMiddleDigit);
+    const sum = middleDigits.reduce((acc, val) => acc + val, 0);
 
-    log(middleDigitList);
-    return middleDigitList;
-  } catch (err) {
+    log(`Middle digits: ${middleDigits}`);
+    log(`Sum of middle digits: ${sum}`);
+
+    return (middleDigits, sum);
+} catch (err) {
     log(`error in middleDigits:  ${err}`);
     return [];
   }
