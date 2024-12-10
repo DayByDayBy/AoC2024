@@ -2,7 +2,7 @@ const { log, error } = require("console");
 const fs = require("fs");
 const path = require("path");
 
-async function checkUpdates(filename) {
+async function grabUpdates(filename) {
   try {
     const filePath = path.join(__dirname, filename);
     const data = await fs.promises.readFile(filePath, "utf8");
@@ -40,7 +40,9 @@ async function checkUpdates(filename) {
     const rulesArray = rules(parts[0]);
     const updatesArray = updates(parts[1]);
 
-    return updatesArray;
+    while (validateRules(updatesArray,rulesArray)) {
+        return rulesArray, updatesArray;
+    }
 
     // log(rulesArray);
     // log(updatesArray);
@@ -50,9 +52,26 @@ async function checkUpdates(filename) {
   }
 }
 
+async function validateRules(arr, rules){
+    const positions = new Map(arr.map((num, index) => [num, index]))
+    for (const [first, second] of rules) {
+      const firstIndex = positions.get(first);
+      const secondIndex = positions.get(second);
+      if (firstIndex !== undefined && secondIndex !== undefined) {
+        if (firstIndex >= secondIndex) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+
+
+
 async function middleDigits(file) {
   try {
-    const updateList = await checkUpdates(file);
+    const updateList = await grabUpdates(file);
 
     if (updateList.length === 0) {
       log(`no updates found`);
@@ -75,5 +94,3 @@ async function middleDigits(file) {
 })();
 
 middleDigits("small_data.txt");
-// checkUpdates("small_data.txt");
-// checkUpdates("data.txt");
