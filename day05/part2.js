@@ -1,4 +1,6 @@
 // actually a pt1/pt2
+// didnt need to be, pt1 already worked, but it does mean extra verification for the soltion 
+// here, and tbh i kinda like the idea of making one script to solve them both 
 
 const fs = require("fs");
 const path = require("path");
@@ -59,10 +61,10 @@ const parseInput = (lines) => {
       const { rules, pages } = parseInput(lines);
       const { p1, p2 } = processPages(rules, pages);
   
-      console.log("P1:", p1);
-      console.log("P2:", p2);
+      console.log("partOneMiddleSum", p1);
+      console.log("partTwoMmiddleSum:", p2);
     } catch (err) {
-      console.error("Error reading file:", err);
+      console.error("error reading file:", err);
     }
   };
   
