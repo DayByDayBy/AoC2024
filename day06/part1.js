@@ -52,7 +52,7 @@ const isClear = (row, col, grid) => {
 
 // change direction
 function nextDirection(currentIndex) {
-  return (currentIndex + 1) % 4; // Move to the next direction, cycling back to 0 after 3
+  return (currentIndex + 1) % 4;
 }
 
 // main geezer
