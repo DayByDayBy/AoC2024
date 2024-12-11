@@ -19,16 +19,18 @@ const parseUpdate = (str) =>
   });
 
 const isValidUpdate = (update, rulesArray) => {
-  const indexMap = new Map(update.map((val, idx) => [val, idx]));
-
-  for (const [first, second] of rulesArray) {
+    for (const [first, second] of rulesArray) {
     const firstIdx = update.indexOf(first);
     const secondIdx = update.indexOf(second);
 
-    if (firstIdx !== -1 && secondIdx !== -1 && firstIdx > secondIdx) {
+    if (firstIdx !== -1 && secondIdx !== -1) {
+        if (firstIdx > secondIdx) {
+        log(`Rule Violation: ${first} should come before ${second}, but in update ${update}, ${first} is at index ${firstIdx} and ${second} is at index ${secondIdx}`);
+
       return false;
     }
   }
+}
   return true;
 };
 
@@ -60,15 +62,11 @@ const fixUpdate = (update, rulesArray) => {
 async function checkUpdates(filename) {
   try {
     const filePath = path.join(__dirname, filename);
-    if (!fs.existsSync(filePath)) {
-      throw new Error(`file doesnt exist: ${filename}`);
-    }
+    if (!fs.existsSync(filePath)) {throw new Error(`file doesnt exist: ${filename}`);}
 
     const data = await fs.promises.readFile(filePath, "utf8");
     const parts = data.trim().split("\n\n");
-    if (parts.length !== 2) {
-      throw new Error("expecting two chunks");
-    }
+    if (parts.length !== 2) {throw new Error("expecting two chunks");}
 
     const rulesArray = parts[0].trim().split("\n").map(parseRuleset);
 
@@ -76,7 +74,6 @@ async function checkUpdates(filename) {
       .trim()
       .split("\n")
       .map(parseUpdate)
-      .filter((update) => isValidUpdate(update, rulesArray));
 
     return { rulesArray, updatesArray };
   } catch (err) {
@@ -92,42 +89,37 @@ async function fixUpdates(fileName) {
     log(`Total Rules: ${rulesArray.length}`);
     log(`Total Updates: ${updatesArray.length}`);
 
-    log("Rules:");
-    rulesArray.forEach((rule) => log(rule));
-
     log("All Updates:");
     updatesArray.forEach((update) => log(update));
 
     const brokenUpdates = updatesArray.filter((update) => {
-      const isInvalid = !isValidUpdate(update, rulesArray);
-      if (isInvalid) {
-      } return isInvalid;
-    });
-      return brokenUpdates;
-    } catch (err){
-        error(`eror in fixUpdates: ${err.message}`);
-        return [];
-    }
-}
+        const violations = rulesArray.some(([first, second]) =>{
+            const firstIdx = update.indexOf(first);
+            const secondIdx = update.indexOf(second);
 
-    log(`Broken Updates (${brokenUpdates.length}):`);
-    brokenUpdates.forEach((update, index) => {
-      log(`Update ${index + 1}: ${update}`);
+            if (firstIdx !== -1 && secondIdx !== -1){
+                if (firstIdx > secondIdx){
+                    log(`Rule Violation: ${first} should come before ${second}, but in update ${update}, ${first} is at index ${firstIdx} and ${second} is at index ${secondIdx}`);
+                    return true;
+                }
+            } return false;
+        });
+        return violations;
     });
+
+    log(`Broken updates: ${brokenUpdates.length}`);
+    log("Broken Updates:");
+    brokenUpdates.forEach(update => log(update));
+    return brokenUpdates;
 
     const fixedUpdates = brokenUpdates.map((update) =>
       fixUpdate(update, rulesArray)
     );
-
-    log(`broken updates: ${brokenUpdates.length}`);
-    log(`fixed updates: ${fixedUpdates.length}`);
-
-    return fixedUpdates;
   } catch (err) {
     error(`error in fixUpdates: ${err.message}`);
     return [];
   }
-}
+};
 
 function findMiddleDigit(update) {
   const midIdx = Math.floor((update.length - 1) / 2);
