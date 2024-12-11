@@ -2,19 +2,22 @@ const { log, error } = require("console");
 const fs = require("fs");
 const path = require("path");
 
+
+
+// gotdang i hate how messy this import style is 
 function readFromFile(fileName){
     const filePath = path.join(__dirname, fileName);
     try{
         const data = fs.readFileSync(filePath);
-        return data.toString();
-
+        return data.toString().split('\n').map(line => line.split(""));
     }catch(err){
         error(`error reading in file: ${err.message}`)
     }
 }
 
 //input
-const mapInput = readFromFile('small_data.txt')
+const mapInput = readFromFile('small_data.txt');
+// const mapInput = readFromFile('data.txt');
 
 // NESW
 const directions = [
@@ -35,8 +38,6 @@ function guardFind(matrix, char) {
     return null;
 }
 
-const startPos = guardFind(matrix, '^');
-
 
 // path check
 const isClear = (row, col, grid) =>{
@@ -52,13 +53,13 @@ function nextDirection(currentIndex) {
     return (currentIndex + 1) % 4; // Move to the next direction, cycling back to 0 after 3
 }
 
-
-
 // main geezer
+
 function pathFind(startPos, grid){
 
     let [row, col] = startPos
-    let currDirection = directions[0];
+    let currDirection = 0;
+    let count = 0;
 
     while (true) {
         const [dRow, dCol] = directions[currDirection];
@@ -69,26 +70,33 @@ function pathFind(startPos, grid){
             row = newRow;
             col = newCol;
 
+            count++;
+            log(`Moved to (${row}, ${col})`);
+
+            log(count);
+
         } else {
             currDirection = nextDirection(currDirection);
 
         }
 
         if (
-            (row + directions[currentDirection][0] < 0 || row + directions[currentDirection][0] >= grid.length) ||
-            (col + directions[currentDirection][1] < 0 || col + directions[currentDirection][1] >= grid[0].length)
+            (row + directions[currDirection][0] < 0 || row + directions[currDirection][0] >= grid.length) ||
+            (col + directions[currDirection][1] < 0 || col + directions[currDirection][1] >= grid[0].length)
         
         ){
         log(`Reached edge of grid. Stopping at (${row}, ${col}).`);
         break;
     }
-}
+}    return count;
 }
 
 
 const guardPos = guardFind(mapInput, '^');
 if (guardPos){
-    pathFind(guardPos, mapInput);
+    const steps = pathFind(guardPos, mapInput);
+    log(`Total steps taken: ${steps}`);
 } else {
     log("nae guard found m8");
 }
+
