@@ -22,10 +22,9 @@ const directions = [
     [0,1],
     [1,0],
     [0,-1]
-]
-let direction = directions[0];
+];
 
-const guardFind(matrix, char) {
+function guardFind(matrix, char) {
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < matrix[i].length; j++) {
             if (matrix[i][j] === char) {
@@ -36,7 +35,7 @@ const guardFind(matrix, char) {
     return null;
 }
 
-const guardPos = guardFind(matrix, '^');
+const startPos = guardFind(matrix, '^');
 
 
 // path check
@@ -55,29 +54,41 @@ function nextDirection(currentIndex) {
 
 
 
+// main geezer
+function pathFind(startPos, grid){
 
-// const directionCalc = (position, directions){
-//     for (i=0; i< directions.length; i++) {
-//         const [dRow, dCol] = directions[i];
-//         if (!isClear && directions[0]){
-//             direction = direction[i+1]
-//     }
-    
-// }
+    let [row, col] = startPos
+    let currDirection = directions[0];
 
+    while (true) {
+        const [dRow, dCol] = directions[currDirection];
+        const newRow = row + dRow;
+        const newCol = col + dCol;
 
-function pathFind(guardPos, grid){
-    while (
-        guardPos[0] > 0 && 
-        guardPos[0] < grid.length &&
-        guardPos[1] > 0 &&
-        guardPos[1] < grid[0].length){
+        if (isClear(newRow, newCol, grid)){
+            row = newRow;
+            col = newCol;
+
+        } else {
+            currDirection = nextDirection(currDirection);
 
         }
 
-    if((guardPos + direction) === isClear){
-        guardPos = guardPos+direction;
-    } else {directionCalc}
+        if (
+            (row + directions[currentDirection][0] < 0 || row + directions[currentDirection][0] >= grid.length) ||
+            (col + directions[currentDirection][1] < 0 || col + directions[currentDirection][1] >= grid[0].length)
+        
+        ){
+        log(`Reached edge of grid. Stopping at (${row}, ${col}).`);
+        break;
+    }
+}
+}
 
 
+const guardPos = guardFind(mapInput, '^');
+if (guardPos){
+    pathFind(guardPos, mapInput);
+} else {
+    log("nae guard found m8");
 }
