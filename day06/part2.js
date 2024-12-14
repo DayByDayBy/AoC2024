@@ -1,15 +1,11 @@
 
 // need these for sure 
-directiions = [
+DIRECTIONS = [
     [-1, 0],
     [0, 1],
     [1, 0],
     [0,-1]
 ]
-// probably these, maybe a 'catchall' that runs em?
-function turnRight(){
-
-}
 
 function isClear(){
 
@@ -36,3 +32,8 @@ function parseInput(input){
      }
 return {grid, startPos};
 }
+
+function turnRight(directionIdx){
+    return (directionIdx+1) % DIRECTIONS.length;
+}
+
