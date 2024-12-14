@@ -46,7 +46,6 @@ function* walkingThePath(grid) {
       const key = pos.join(",");
       visited.add(key);
   
-      console.log(`Move ${moveCount}: pos=${pos}, dir=${dir}, visited=${visited.size}`);
   
       const straightPos = [
         pos[0] + DIRECTIONS[dir][0],
