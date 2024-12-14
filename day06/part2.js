@@ -3,7 +3,7 @@ const path = require("path");
 
 const input = fs.readFileSync(path.join(__dirname, "small_data.txt"), "utf8");
 
-DIRECTIONS = [
+const DIRECTIONS = [
   [-1, 0],
   [0, 1],
   [1, 0],
