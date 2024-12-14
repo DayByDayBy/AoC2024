@@ -38,42 +38,49 @@ function isClear(grid, location, direction) {
   const newRow = row + dRow;
   const newCol = col + dCol;
 
-  return (
-    newRow >= 0 &&
-    newRow < grid.length &&
-    newCol >= 0 &&
-    newCol < grid[0].length &&
-    grid[newRow][newCol]
-  );
+
+  return grid[newRow][newCol];
 }
 
+
 function walkGrid(grid, startPos) {
- 
+  const visitedGrid = grid.map((row) => row.map((cell) => (cell ? "." || "^": "#")));
+
   const visited = new Set();
   let directionIdx = 0;
   let [row, col] = startPos;
 
-  let revisit_count = 0; 
+  let revisit_count = 0;
   const MAX_REVISITS = 1000;
 
-  visited.add(`${row}, ${col}`);
 
   while (revisit_count < MAX_REVISITS) {
-
     const direction = DIRECTIONS[directionIdx];
 
     if (isClear(grid, [row, col], direction)) {
       row += direction[0];
       col += direction[1];
-      visited.add(`${row}, ${col}`);
+      
+      if (
+        newRow >= 0 &&
+        newRow < grid.length &&
+        newCol >= 0 &&
+        newCol < grid[0].length)
+        { visitedGrid[row][col] = ((visited.size) % 10).toString();
+
+      const pos = `${row},${col}`;
+      if(!visited.has(pos)){
+      visited.add(`${row},${col}`);}}
     } else {
       directionIdx = turnRight(directionIdx);
     }
-    if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) {
-      break;
-    }
+    console.log(`Moved to (${row}, ${col}).`);
     revisit_count++;
   }
+
+  //   console.log("Visited cells:", [...visited]);
+  //   console.log("Total visited cells:", visited.size);
+  console.log(visitedGrid.map((row) => row.join("")).join("\n"));
   return visited.size;
 }
 
