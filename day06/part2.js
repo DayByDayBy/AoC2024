@@ -7,9 +7,7 @@ DIRECTIONS = [
     [0,-1]
 ]
 
-function isClear(){
 
-}
 
 function walkGrid(){
 
@@ -37,3 +35,17 @@ function turnRight(directionIdx){
     return (directionIdx+1) % DIRECTIONS.length;
 }
 
+function isClear(grid, location, direction){
+    const [row, col] = location;
+    const [dRow, dCol] = direction;
+    const newRow = row + dRow;
+    const newCol = col + dCol;
+
+    return (
+        newRow >= 0 &&
+        newRow < grid.length &&
+        newCol >= 0 &&
+        newCol < grid[0].length &&
+        grid[newRow][newCol]
+    );
+}
