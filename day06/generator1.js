@@ -45,8 +45,7 @@ function* walkingThePath(grid) {
   while (true) {
 
     const key = pos.join(",");
-    if (!visited.has(key)){
-    visited.add(key)};
+    visited.add(key);
 
     yield {
       pos,
