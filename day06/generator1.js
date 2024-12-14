@@ -12,21 +12,12 @@ const DIRECTIONS = [
 
 
 // the data
-const testInput = fs.readFileSync(
-  path.join(__dirname, "small_data.txt"),
-  "utf8"
-);
-const mainInput = fs.readFileSync(
-    path.join(__dirname, "data.txt"), 
-    "utf8"
-);
+const testInput = fs.readFileSync(path.join(__dirname, "small_data.txt"),"utf8");
+const mainInput = fs.readFileSync(path.join(__dirname, "data.txt"),"utf8");
 
 function parseInput(input) {
     return input.trim().split('\n').map(line => line.split(''));
   }
-
-
-
 
 
 function findStart(grid) {
@@ -46,16 +37,16 @@ function isValidMove(grid, [r, c]) {
 }
 
 function* walkingThePath(grid) {
+
   const visited = new Set();
   let pos = findStart(grid);
   let dir = 0;
 
   while (true) {
+
     const key = pos.join(",");
-
-    if (visited.has(key)) break;
-
-    visited.add(key);
+    if (!visited.has(key)){
+    visited.add(key)};
 
     yield {
       pos,
@@ -63,19 +54,26 @@ function* walkingThePath(grid) {
       direction: dir,
     };
 
-    if (isValidMove(grid, nextPos)) {
-      pos = nextPos;
-      dir = nextDir;
-      continue;
-    }
-
     const straightPos = [
-      pos[0] + DIRECTIONS[dir][0],
-      pos[1] + DIRECTIONS[dir][1],
-    ];
+        pos[0] + DIRECTIONS[dir][0],
+        pos[1] + DIRECTIONS[dir][1],
+      ];
+
 
     if (isValidMove(grid, straightPos)) {
       pos = straightPos;
+      continue;
+    }
+
+    const nextDir = (dir + 1) % 4;
+    const nextPos = [
+        pos[0] + DIRECTIONS[nextDir][0],
+        pos[1] + DIRECTIONS[nextDir][1]
+    ];
+
+    if (isValidMove(grid, straightPos)) {
+      pos = nextPos;
+      dir = nextDir;
       continue;
     }
       break;
@@ -93,7 +91,7 @@ function solveGrid(grid) {
 }
 
 
-function main(){
+function main() {
     const testGrid = parseInput(testInput);
     const mainGrid = parseInput(mainInput);
 
@@ -101,3 +99,5 @@ function main(){
     console.log("main:", solveGrid(mainGrid));
 
 }
+
+main();
