@@ -45,9 +45,7 @@ function* walkingThePath(grid) {
     while (true) {
       const key = pos.join(",");
       visited.add(key);
-  
-      console.log(`Move ${moveCount}: pos=${pos}, dir=${dir}, visited=${visited.size}`);
-  
+    
       const straightPos = [
         pos[0] + DIRECTIONS[dir][0],
         pos[1] + DIRECTIONS[dir][1],
@@ -81,14 +79,12 @@ function* walkingThePath(grid) {
   
   function solveGrid(grid) {
     const walkinHere = walkingThePath(grid);
+    
   
-    // Consume the entire generator
     for (const state of walkinHere) {
-      // This will print each state
       console.log(state);
     }
   
-    // Rerun to get final count
     const finalTraversal = walkingThePath(grid);
     let lastState;
     for (const state of finalTraversal) {
