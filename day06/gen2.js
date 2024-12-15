@@ -16,6 +16,8 @@ const testInput = fs.readFileSync(
 );
 const mainInput = fs.readFileSync(path.join(__dirname, "data.txt"), "utf8");
 
+
+
 function parseInput(input) {
   return input
     .trim()
@@ -34,18 +36,20 @@ function findStart(grid) {
 
 function isValidMove(grid, [r, c]) {
   if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length) {
-    console.log(`Out of bounds: (${r}, ${c})`);
-
     return false;
   }
   return grid[r][c] !== "#";
 }
 
-function* walkingThePath(grid) {
+function walkingThePath(grid) {
   const visited = new Set();
   let pos = findStart(grid);
   let dir = 0;
-  let moveCount = 0;
+
+  visited.add(pos.join(","));
+
+  console.log("Initial Grid:");
+  grid.forEach(row => console.log(row.join('')));
 
   while (true) {
     const key = pos.join(",");
@@ -58,7 +62,7 @@ function* walkingThePath(grid) {
 
     if (isValidMove(grid, straightPos)) {
       pos = straightPos;
-      moveCount++;
+      visited.add(key);
       continue;
     }
 
@@ -71,30 +75,21 @@ function* walkingThePath(grid) {
     if (isValidMove(grid, nextPos)) {
       pos = nextPos;
       dir = nextDir;
-      moveCount++;
+      visited.add(key);
       continue;
     }
 
     console.log("No valid moves left. Breaking.");
     break;
   }
+  return visited;
 
   console.log(`visited squares: ${visited.size}`);
 }
 
 function solveGrid(grid) {
-  const walkinHere = walkingThePath(grid);
-
-  for (const state of walkinHere) {
-    console.log(state);
-  }
-
-  const finalTraversal = walkingThePath(grid);
-  let lastState;
-  for (const state of finalTraversal) {
-    lastState = state;
-  }
-  return lastState ? lastState.visited : 0;
+  const visited = walkingThePath(grid);
+  return visited.size;
 }
 
 function main() {
