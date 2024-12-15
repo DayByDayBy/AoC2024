@@ -3,7 +3,7 @@ const path = require("path");
 
 const input = fs.readFileSync(path.join(__dirname, "small_data.txt"), "utf8");
 
-DIRECTIONS = [
+const DIRECTIONS = [
   [-1, 0],
   [0, 1],
   [1, 0],
@@ -12,7 +12,7 @@ DIRECTIONS = [
 
 function parseInput(input) {
   const lines = input.trim().split("\n");
-  const grid = lines.map((line) => line.split("").map((char) => char !== "#"));
+  const grid = lines.map((line) => line.split(""));
   let startPos = null;
 
   for (let row = 0; row < lines.length; row++) {
@@ -38,10 +38,12 @@ function isClear(grid, location, direction) {
   const newRow = row + dRow;
   const newCol = col + dCol;
 
-
-  return grid[newRow][newCol];
+        if(grid[row,col] !== '#'){
+  return true;
+} else {
+    return false;
 }
-
+}
 
 function walkGrid(grid, startPos) {
   const visitedGrid = grid.map((row) => row.map((cell) => (cell ? "." || "^": "#")));
@@ -60,20 +62,13 @@ function walkGrid(grid, startPos) {
     if (isClear(grid, [row, col], direction)) {
       row += direction[0];
       col += direction[1];
-      
-      if (
-        newRow >= 0 &&
-        newRow < grid.length &&
-        newCol >= 0 &&
-        newCol < grid[0].length)
-        { visitedGrid[row][col] = ((visited.size) % 10).toString();
-
+    
       const pos = `${row},${col}`;
       if(!visited.has(pos)){
-      visited.add(`${row},${col}`);}}
+      visited.add(`${row},${col}`);}
     } else {
       directionIdx = turnRight(directionIdx);
-    }
+    } 
     console.log(`Moved to (${row}, ${col}).`);
     revisit_count++;
   }
@@ -84,5 +79,5 @@ function walkGrid(grid, startPos) {
   return visited.size;
 }
 
-const { grid, startPos } = parseInput(input);
-console.log("visited squares: ", walkGrid(grid, startPos));
+const { map, startPos }  = parseInput(input);
+console.log("visited squares: ", walkGrid(map, startPos));
