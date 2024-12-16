@@ -1,98 +1,89 @@
-const { log, error } = require("console");
 const fs = require("fs");
 const path = require("path");
 
-// gotdang i hate how messy this import style is
-function readFromFile(fileName) {
-  const filePath = path.join(__dirname, fileName);
-  try {
-    const data = fs.readFileSync(filePath);
-    return data
-      .toString()
-      .split("\n")
-      .map((line) => line.split(""));
-  } catch (err) {
-    error(`error reading in file: ${err.message}`);
-  }
-}
-
-//input
-const mapInput = readFromFile("small_data.txt");
-// const mapInput = readFromFile('data.txt');
-
-// NESW
-const directions = [
+const DIRECTIONS = [
   [-1, 0],
   [0, 1],
   [1, 0],
   [0, -1],
 ];
 
-function guardFind(matrix, char) {
-  for (let i = 0; i < matrix.length; i++) {
-    for (let j = 0; j < matrix[i].length; j++) {
-      if (matrix[i][j] === char) {
-        return [i, j];
-      }
+const testInput = fs.readFileSync(
+  path.join(__dirname, "small_data.txt"),
+  "utf8"
+);
+const mainInput = fs.readFileSync(path.join(__dirname, "data.txt"), "utf8");
+
+function parseInput(input) {
+  return input
+    .trim()
+    .split("\n")
+    .map((line) => line.split(""));
+}
+
+function findStart(grid) {
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < grid[0].length; c++) {
+      if (grid[r][c] === "^") return [r, c];
     }
   }
-  return null;
+  throw new Error("no start (^) found");
 }
 
-// path check
-const isClear = (row, col, grid) => {
-  return (
-    row >= 0 &&
-    row < grid.length &&
-    col >= 0 &&
-    col < grid[0].length &&
-    grid[row][col] === "."
-  );
-};
+function walkPath(inputGrid) {
+  const grid = inputGrid.map(row => [...row]);
+  
+  let startPos = [-1, -1];
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] === '^') {
+        startPos = [i, j];
+        grid[i][j] = '.';
+        break;
+      }
+    }
+    if (startPos[0] !== -1) break;
+  }
 
-// change direction
-function nextDirection(currentIndex) {
-  return (currentIndex + 1) % 4;
-}
+  const visited = new Set();
+  let pos = [...startPos];
+  let dir = 0;
 
-// main geezer
-
-function pathFind(startPos, grid) {
-  let [row, col] = startPos;
-  let currDirection = 0;
-  let count = 0;
-  let visited = new Set();
+  visited.add(`${pos[0]},${pos[1]}`);
 
   while (true) {
-    const [dRow, dCol] = directions[currDirection];
-    const newRow = row + dRow;
-    const newCol = col + dCol;
+    let nextPos = [
+      pos[0] + DIRECTIONS[dir][0], 
+      pos[1] + DIRECTIONS[dir][1]
+    ];
 
-    if (
-      newRow < 0 ||
-      newRow >= grid.length ||
-      newCol < 0 ||
-      newCol >= grid[0].length
-    ) {
-      log(`Reached edge of grid. Stopping at (${row}, ${col}).`);
+    if (nextPos[0] < 0 || nextPos[0] >= grid.length || 
+        nextPos[1] < 0 || nextPos[1] >= grid[0].length) {
       break;
     }
 
-    if (!isClear(newRow, newCol, grid)) {
-    currDirection = nextDirection(currDirection);
-    } else {
-        row = newRow;
-        col = newCol;
-        count++;
+    if (grid[nextPos[0]][nextPos[1]] === '#') {
+      dir = (dir + 1) % 4;
+      continue;
     }
+    pos = nextPos;
+    visited.add(`${pos[0]},${pos[1]}`);
   }
-  return count;
+
+  return visited;
 }
 
-const guardPos = guardFind(mapInput, "^");
-if (guardPos) {
-  const steps = pathFind(guardPos, mapInput);
-  log(`Total steps taken: ${steps}`);
-} else {
-  log("nae guard found m8");
+function solveGrid(grid) {
+  const visited = walkPath(grid);
+  return visited.size;
 }
+
+function main() {
+  const testGrid = parseInput(testInput);
+  const mainGrid = parseInput(mainInput);
+
+  console.log("test:", solveGrid(testGrid));
+  console.log("main:", solveGrid(mainGrid));
+}
+
+main();

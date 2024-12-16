@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 
-// NESW
 const DIRECTIONS = [
   [-1, 0],
   [0, 1],
@@ -9,14 +8,11 @@ const DIRECTIONS = [
   [0, -1],
 ];
 
-// the data
 const testInput = fs.readFileSync(
   path.join(__dirname, "small_data.txt"),
   "utf8"
 );
 const mainInput = fs.readFileSync(path.join(__dirname, "data.txt"), "utf8");
-
-
 
 function parseInput(input) {
   return input
@@ -34,61 +30,51 @@ function findStart(grid) {
   throw new Error("no start (^) found");
 }
 
-function isValidMove(grid, [r, c]) {
-  if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length) {
-    return false;
+function walkPath(inputGrid) {
+  const grid = inputGrid.map(row => [...row]);
+  
+  let startPos = [-1, -1];
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] === '^') {
+        startPos = [i, j];
+        grid[i][j] = '.';
+        break;
+      }
+    }
+    if (startPos[0] !== -1) break;
   }
-  return grid[r][c] !== "#";
-}
 
-function walkingThePath(grid) {
   const visited = new Set();
-  let pos = findStart(grid);
+  let pos = [...startPos];
   let dir = 0;
 
-  visited.add(pos.join(","));
-
-  console.log("Initial Grid:");
-  grid.forEach(row => console.log(row.join('')));
+  visited.add(`${pos[0]},${pos[1]}`);
 
   while (true) {
-    const key = pos.join(",");
-    visited.add(key);
-
-    const straightPos = [
-      pos[0] + DIRECTIONS[dir][0],
-      pos[1] + DIRECTIONS[dir][1],
+    let nextPos = [
+      pos[0] + DIRECTIONS[dir][0], 
+      pos[1] + DIRECTIONS[dir][1]
     ];
 
-    if (isValidMove(grid, straightPos)) {
-      pos = straightPos;
-      visited.add(key);
-      continue;
+    if (nextPos[0] < 0 || nextPos[0] >= grid.length || 
+        nextPos[1] < 0 || nextPos[1] >= grid[0].length) {
+      break;
     }
 
-    const nextDir = (dir + 1) % 4;
-    const nextPos = [
-      pos[0] + DIRECTIONS[nextDir][0],
-      pos[1] + DIRECTIONS[nextDir][1],
-    ];
-
-    if (isValidMove(grid, nextPos)) {
-      pos = nextPos;
-      dir = nextDir;
-      visited.add(key);
+    if (grid[nextPos[0]][nextPos[1]] === '#') {
+      dir = (dir + 1) % 4;
       continue;
     }
-
-    console.log("No valid moves left. Breaking.");
-    break;
+    pos = nextPos;
+    visited.add(`${pos[0]},${pos[1]}`);
   }
-  return visited;
 
-  console.log(`visited squares: ${visited.size}`);
+  return visited;
 }
 
 function solveGrid(grid) {
-  const visited = walkingThePath(grid);
+  const visited = walkPath(grid);
   return visited.size;
 }
 
